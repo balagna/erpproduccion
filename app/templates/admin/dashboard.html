@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+  <div><h2>Dashboard</h2><p>Estado general del sistema.</p></div>
+</div>
+
+<div class="metrics">
+  <div class="metric"><span>Total usuarios</span><strong>{{ total_users }}</strong></div>
+  <div class="metric"><span>Usuarios activos</span><strong>{{ active_users }}</strong></div>
+  <div class="metric"><span>Empresas</span><strong>{{ total_companies }}</strong></div>
+  <div class="metric"><span>Sucursales</span><strong>{{ total_branches }}</strong></div>
+</div>
+
+<section class="card section-card">
+  <div class="section-head"><h3>Distribución por roles</h3></div>
+  <canvas id="rolesChart"
+    data-superadmin="{{ role_counts.superadmin }}"
+    data-admin="{{ role_counts.admin }}"
+    data-manager="{{ role_counts.manager }}"
+    data-user="{{ role_counts.user }}"
+    width="500" height="180"></canvas>
+</section>
+
+<section class="card section-card">
+  <div class="section-head"><h3>Actividad reciente</h3></div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Fecha</th><th>Acción</th><th>Detalle</th><th>IP</th></tr></thead>
+      <tbody>
+        {% for log in recent_logs %}
+        <tr>
+          <td>{{ log.created_at }}</td>
+          <td>{{ log.action }}</td>
+          <td>{{ log.detail }}</td>
+          <td>{{ log.ip_address }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

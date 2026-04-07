@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header"><div><h2>Empresas</h2></div></div>
+<section class="card section-card">
+  <form method="post" class="form-grid responsive-grid-3">
+    <input type="text" name="name" placeholder="Nombre empresa" required>
+    <input type="text" name="code" placeholder="Código" required>
+    {% if current_user.has_permission('companies.create') %}<button type="submit">Crear empresa</button>{% endif %}
+  </form>
+</section>
+<section class="card section-card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>ID</th><th>Nombre</th><th>Código</th></tr></thead>
+      <tbody>{% for c in companies %}<tr><td>{{ c.id }}</td><td>{{ c.name }}</td><td>{{ c.code }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

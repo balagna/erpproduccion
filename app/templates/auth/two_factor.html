@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card auth-card">
+  <h2>Validación 2FA</h2>
+  <form method="post" class="form-grid">
+    {% if need_email %}<div><label>Código correo</label><input type="text" name="email_code" maxlength="6" required></div>{% endif %}
+    {% if need_totp %}<div><label>Código app</label><input type="text" name="totp_code" maxlength="6" required></div>{% endif %}
+    <button type="submit">Validar</button>
+  </form>
+</section>
+{% endblock %}

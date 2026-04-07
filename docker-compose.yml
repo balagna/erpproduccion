@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    container_name: whitelabel_login_v5_1_db
+    environment:
+      POSTGRES_DB: whitelabel_login_v5_1
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_v5_1:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: whitelabel_login_v5_1_web
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/whitelabel_login_v5_1
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data_v5_1:

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card auth-card wide-auth">
+  <h2>Registro</h2>
+  <form method="post" class="form-grid two-cols">
+    <div><label>Nombre completo</label><input type="text" name="full_name" required></div>
+    <div><label>Correo</label><input type="email" name="email" required></div>
+    <div><label>Contraseña</label><input type="password" name="password" required></div>
+    <div><label>Empresa</label><select name="company_id"><option value="">Sin asignar</option>{% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+    <div><label>Sucursal</label><select name="branch_id"><option value="">Sin asignar</option>{% for b in branches %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}</select></div>
+    <div class="full-row"><button type="submit">Registrar</button></div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card auth-card">
+  <h2>Iniciar sesión</h2>
+  <form method="post" class="form-grid">
+    <label>Correo</label>
+    <input type="email" name="email" required>
+    <label>Contraseña</label>
+    <input type="password" name="password" required>
+    <button type="submit">Ingresar</button>
+  </form>
+  <div class="helper">
+    <a href="{{ url_for('auth.forgot_password') }}">Olvidé mi contraseña</a>
+    <a href="{{ url_for('auth.register') }}">Crear cuenta</a>
+  </div>
+</section>
+{% endblock %}

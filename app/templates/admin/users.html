@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+  <div><h2>Usuarios</h2><p>Gestión de usuarios y seguridad.</p></div>
+  <div class="actions">
+    <a class="btn-secondary" href="{{ url_for('admin.users_export') }}">Exportar CSV</a>
+  </div>
+</div>
+
+<section class="card section-card">
+  <h3>Crear usuario</h3>
+  <form method="post" action="{{ url_for('admin.create_user') }}" class="form-grid responsive-grid-6">
+    <input type="text" name="full_name" placeholder="Nombre completo" required>
+    <input type="email" name="email" placeholder="Correo" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <select name="role">
+      <option value="user">user</option>
+      <option value="manager">manager</option>
+      <option value="admin">admin</option>
+      {% if current_user.is_superadmin() %}<option value="superadmin">superadmin</option>{% endif %}
+    </select>
+    <select name="company_id"><option value="">Empresa</option>{% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+    <select name="branch_id"><option value="">Sucursal</option>{% for b in branches %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}</select>
+    <button type="submit">Crear usuario</button>
+  </form>
+</section>
+
+<section class="card section-card">
+  <div class="section-head">
+    <h3>Listado</h3>
+    <input type="text" class="table-search" data-table-search="usersTable" placeholder="Buscar...">
+  </div>
+  <div class="table-wrap">
+    <table class="table js-table" id="usersTable" data-page-size="10">
+      <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Empresa</th><th>Sucursal</th><th>Activo</th><th>2FA Email</th><th>2FA App</th><th>Acciones</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.full_name }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.role }}</td>
+          <td>{{ u.company.name if u.company else '' }}</td>
+          <td>{{ u.branch.name if u.branch else '' }}</td>
+          <td>{{ 'Sí' if u.is_active_user else 'No' }}</td>
+          <td>{{ 'Sí' if u.two_factor_email_enabled else 'No' }}</td>
+          <td>{{ 'Sí' if u.two_factor_totp_enabled else 'No' }}</td>
+          <td>
+            <details>
+              <summary>Editar</summary>
+              <form method="post" action="{{ url_for('admin.update_user', user_id=u.id) }}" class="form-grid mini-form">
+                <input type="text" name="full_name" value="{{ u.full_name }}" required>
+                <select name="role">
+                  <option value="user" {% if u.role=='user' %}selected{% endif %}>user</option>
+                  <option value="manager" {% if u.role=='manager' %}selected{% endif %}>manager</option>
+                  <option value="admin" {% if u.role=='admin' %}selected{% endif %}>admin</option>
+                  {% if current_user.is_superadmin() %}<option value="superadmin" {% if u.role=='superadmin' %}selected{% endif %}>superadmin</option>{% endif %}
+                </select>
+                <select name="company_id"><option value="">Empresa</option>{% for c in companies %}<option value="{{ c.id }}" {% if u.company_id==c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+                <select name="branch_id"><option value="">Sucursal</option>{% for b in branches %}<option value="{{ b.id }}" {% if u.branch_id==b.id %}selected{% endif %}>{{ b.name }}</option>{% endfor %}</select>
+                <label class="checkbox"><input type="checkbox" name="is_active_user" {% if u.is_active_user %}checked{% endif %}> Activo</label>
+                <label class="checkbox"><input type="checkbox" name="two_factor_email_enabled" {% if u.two_factor_email_enabled %}checked{% endif %}> 2FA correo</label>
+                <button type="submit">Guardar</button>
+              </form>
+              {% if current_user.is_superadmin() and current_user.id != u.id %}
+              <form method="post" action="{{ url_for('admin.delete_user', user_id=u.id) }}" onsubmit="return confirm('¿Eliminar usuario?');">
+                <button class="danger" type="submit">Eliminar</button>
+              </form>
+              {% endif %}
+            </details>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="table-pagination" data-table-pagination="usersTable"></div>
+</section>
+{% endblock %}

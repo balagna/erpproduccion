@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header"><div><h2>Sucursales</h2></div></div>
+<section class="card section-card">
+  <form method="post" class="form-grid responsive-grid-4">
+    <input type="text" name="name" placeholder="Nombre sucursal" required>
+    <input type="text" name="code" placeholder="Código" required>
+    <select name="company_id" required><option value="">Empresa</option>{% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+    {% if current_user.has_permission('branches.create') %}<button type="submit">Crear sucursal</button>{% endif %}
+  </form>
+</section>
+<section class="card section-card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>ID</th><th>Empresa</th><th>Nombre</th><th>Código</th></tr></thead>
+      <tbody>{% for b in branches %}<tr><td>{{ b.id }}</td><td>{{ b.company.name }}</td><td>{{ b.name }}</td><td>{{ b.code }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

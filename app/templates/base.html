@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <style>:root{--primary:{{ primary_color }};--secondary:{{ secondary_color }};}</style>
+</head>
+<body>
+  <div class="app-shell">
+    {% if current_user.is_authenticated %}
+    <aside class="sidebar">
+      <div class="sidebar-brand">{{ app_logo_text }}</div>
+      <div class="sidebar-user">
+        <strong>{{ current_user.full_name }}</strong>
+        <span>{{ current_user.role }}</span>
+      </div>
+      <nav class="sidebar-nav">
+        {% if current_user.has_permission('dashboard.view') %}<a href="{{ url_for('admin.dashboard') }}">Dashboard</a>{% endif %}
+        {% if current_user.has_permission('users.view') %}<a href="{{ url_for('admin.users') }}">Usuarios</a>{% endif %}
+        {% if current_user.has_permission('companies.view') %}<a href="{{ url_for('admin.companies') }}">Empresas</a>{% endif %}
+        {% if current_user.has_permission('branches.view') %}<a href="{{ url_for('admin.branches') }}">Sucursales</a>{% endif %}
+        {% if current_user.has_permission('audit.view') %}<a href="{{ url_for('admin.audit') }}">Auditoría</a>{% endif %}
+        <a href="{{ url_for('profile.index') }}">Mi perfil</a>
+        <a href="{{ url_for('auth.logout') }}">Salir</a>
+      </nav>
+    </aside>
+    {% endif %}
+
+    <div class="main-panel {% if not current_user.is_authenticated %}public-panel{% endif %}">
+      <header class="topbar">
+        <button class="menu-toggle" type="button" onclick="document.body.classList.toggle('sidebar-open')">☰</button>
+        <h1 class="page-brand">{{ app_name }}</h1>
+      </header>
+      <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>

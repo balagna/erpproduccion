@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header"><div><h2>Mi perfil</h2></div></div>
+<div class="split-grid">
+  <section class="card section-card">
+    <p><strong>Nombre:</strong> {{ current_user.full_name }}</p>
+    <p><strong>Correo:</strong> {{ current_user.email }}</p>
+    <p><strong>Rol:</strong> {{ current_user.role }}</p>
+  </section>
+
+  <section class="card section-card">
+    <h3>Cambiar contraseña</h3>
+    <form method="post" action="{{ url_for('profile.change_password') }}" class="form-grid">
+      <input type="password" name="current_password" placeholder="Contraseña actual" required>
+      <input type="password" name="new_password" placeholder="Nueva contraseña" required>
+      <input type="password" name="confirm_password" placeholder="Confirmar nueva contraseña" required>
+      <button type="submit">Actualizar</button>
+    </form>
+  </section>
+</div>
+
+<div class="split-grid">
+  <section class="card section-card">
+    <h3>2FA por correo</h3>
+    <p>Estado: <strong>{{ 'Activo' if current_user.two_factor_email_enabled else 'Inactivo' }}</strong></p>
+    {% if current_user.two_factor_email_enabled %}
+    <form method="post" action="{{ url_for('profile.disable_email_2fa') }}"><button class="danger" type="submit">Desactivar</button></form>
+    {% else %}
+    <form method="post" action="{{ url_for('profile.enable_email_2fa') }}"><button type="submit">Activar</button></form>
+    {% endif %}
+  </section>
+
+  <section class="card section-card">
+    <h3>2FA app autenticadora</h3>
+    {% if current_user.two_factor_totp_enabled %}
+      <p>Estado: <strong>Activo</strong></p>
+      <form method="post" action="{{ url_for('profile.disable_totp') }}"><button class="danger" type="submit">Desactivar</button></form>
+    {% else %}
+      {% if not pending_secret %}
+      <form method="post" action="{{ url_for('profile.start_totp') }}"><button type="submit">Configurar TOTP</button></form>
+      {% else %}
+      <p>Escanea este QR con tu app autenticadora.</p>
+      <img class="qr" src="data:image/png;base64,{{ qr_image }}" alt="QR">
+      <p><strong>Clave manual:</strong> {{ pending_secret }}</p>
+      <form method="post" action="{{ url_for('profile.confirm_totp') }}" class="form-grid">
+        <input type="hidden" name="pending_secret" value="{{ pending_secret }}">
+        <input type="text" name="totp_code" placeholder="Código de 6 dígitos" required>
+        <button type="submit">Confirmar</button>
+      </form>
+      {% endif %}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
